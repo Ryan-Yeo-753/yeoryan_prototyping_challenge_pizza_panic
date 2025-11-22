@@ -166,7 +166,7 @@ class MatchEndPageState extends ConsumerState<MatchEndPage> {
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
-                    'Next Match',
+                    'Initialize Upload',
                   ),
                 ),
               ),

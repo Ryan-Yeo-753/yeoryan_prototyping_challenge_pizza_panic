@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:prototyping_challenge_pizza_panic/main.dart';
-import 'package:prototyping_challenge_pizza_panic/data_collection.dart';
-import 'package:prototyping_challenge_pizza_panic/results_provider.dart';
 
 class MatchInformationData {
   String teamName;
@@ -53,6 +51,20 @@ class MatchInformationData {
       malfunctionNumber ?? this.malfunctionNumber,
       malfunctionPenalty ?? this.malfunctionPenalty,
     );
+  }
+
+  @override
+  String toString() {
+    return 'Match Information:\n'
+        'Team Name: $teamName\n'
+        'Match Number: $matchNumber\n'
+        'Total Score: $totalScore\n'
+        'Summative Points: $summativePoints\n'
+        'SummativePenalties: $summativePenalties\n'
+        'Motor Burned? $burnedMotor\n'
+        'Detached Mechanism? $detachedMechanism\n'
+        'Malfunctions: $malfunctionNumber\n'
+        'Malfunction Penalty: $malfunctionPenalty';
   }
 }
 

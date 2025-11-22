@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,6 +22,14 @@ class MatchEndData {
       robotBoundaryCross ?? this.robotBoundaryCross,
       notes ?? this.notes,
     );
+  }
+
+  @override
+  String toString() {
+    return 'Match End:\n'
+        'Human Interference: $humanBoundaryCross\n'
+        'Robot Boundary Cross: $robotBoundaryCross\n'
+        'Notes: $notes';
   }
 }
 
@@ -152,7 +159,7 @@ class MatchEndPageState extends ConsumerState<MatchEndPage> {
                     backgroundColor: Color(0xfff6ff00),
                   ),
                   onPressed: () {
-                    // Uploads files to the Google Spreadsheet
+                    ref.read(dataSavingsNotifierProvider.notifier).saveData();
                   },
                   child: Text(
                     style: TextStyle(

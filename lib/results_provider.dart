@@ -1,28 +1,78 @@
-import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nyxx/nyxx.dart';
 
 import 'package:prototyping_challenge_pizza_panic/match_information.dart';
 import 'package:prototyping_challenge_pizza_panic/data_collection.dart';
 import 'package:prototyping_challenge_pizza_panic/match_end.dart';
 
 class DataSavings extends Notifier<ScoutingData> {
-
   @override
-  ScoutingData build() => ScoutingData(
-    MatchInformationData(
-      '', 1, 0, 0, 0, false, false, 0, 0
-    ),
-    DataCollectionData(
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    ),
-    MatchEndData(
-      false, false, ''
-    )
-  );
+  ScoutingData build() {
+    final matchInformationDatabase = ref.read(matchInformationDataSavingsProvider);
+    final dataCollectionDatabase = ref.read(dataCollectionDataSavingsProvider);
+    final matchEndDatabase = ref.read(matchEndDataSavingsProvider);
+    return ScoutingData(
+      MatchInformationData(
+        matchInformationDatabase.teamName,
+        matchInformationDatabase.matchNumber,
+        matchInformationDatabase.totalScore,
+        matchInformationDatabase.summativePoints,
+        matchInformationDatabase.summativePenalties,
+        matchInformationDatabase.burnedMotor,
+        matchInformationDatabase.detachedMechanism,
+        matchInformationDatabase.malfunctionNumber,
+        matchInformationDatabase.malfunctionPenalty,
+      ),
+      DataCollectionData(
+        dataCollectionDatabase.totalPizzasScored,
+        dataCollectionDatabase.deliveryTrayPizzas,
+        dataCollectionDatabase.deliveryTrayPoints,
+        dataCollectionDatabase.ovenColumnPizzas,
+        dataCollectionDatabase.ovenColumnPoints,
+        dataCollectionDatabase.deliveryHatchPizzas,
+        dataCollectionDatabase.deliveryHatchPoints,
+        dataCollectionDatabase.comboBonuses,
+        dataCollectionDatabase.comboBonusPoints,
+        dataCollectionDatabase.ovenOverrides,
+        dataCollectionDatabase.ovenOverridePoints,
+        dataCollectionDatabase.launchDistance,
+        dataCollectionDatabase.launchPoints,
+      ),
+      MatchEndData(
+        matchEndDatabase.humanBoundaryCross,
+        matchEndDatabase.robotBoundaryCross,
+        matchEndDatabase.notes,
+      ),
+    );
+  }
 
-  void saveData() {
-    // Saves the current MatchInformationData, DataCollectionData, and MatchEndData
-    // Updates the state of the provider using the new values
+  void saveData() async {
+    state = state.copyWith(
+      matchInformation: state.matchInformation,
+      generalData: state.generalData,
+      additionalData: state.additionalData
+    );
+
+    final client = await Nyxx.connectGateway('MTQ0MTkwMDU2MTA3NDIyNTIyMw.GbAx86.i1tnZO54FFqJs91JMkKIexsrP_AqufNQfdrLqI',
+      GatewayIntents.allUnprivileged,
+    );
+
+    final bot = await client.users.fetchCurrentUser();
+
+    client.onMessageCreate.listen((event) async {
+      if (event.mentions.contains(bot)) {
+        await event.message.channel.sendMessage(MessageBuilder(
+          content:
+          '${state.matchInformation}\n'
+          '${state.generalData}\n'
+          '${state.additionalData}'
+        ));
+      }
+    });
+
+    client.onReady.listen((_) {
+      print("Bot is now online.");
+    });
   }
 }
 
@@ -36,8 +86,15 @@ class ScoutingData {
   MatchEndData additionalData;
 
   ScoutingData(this.matchInformation, this.generalData, this.additionalData);
-
-  static Map<String, dynamic> toMap(ScoutingData data) {
-    return <String, ScoutingData>{'data': data};
+  ScoutingData copyWith({
+    MatchInformationData? matchInformation,
+    DataCollectionData? generalData,
+    MatchEndData? additionalData,
+  }) {
+    return ScoutingData(
+     matchInformation ?? this.matchInformation,
+     generalData ?? this.generalData,
+     additionalData ?? this.additionalData
+    );
   }
 }

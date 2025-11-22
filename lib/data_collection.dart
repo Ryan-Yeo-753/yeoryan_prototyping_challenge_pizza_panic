@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:prototyping_challenge_pizza_panic/main.dart';
-import 'package:prototyping_challenge_pizza_panic/results_provider.dart';
 
 class DataCollectionData {
   int totalPizzasScored;
@@ -70,6 +69,17 @@ class DataCollectionData {
       launchDistance ?? this.launchDistance,
       launchPoints ?? this.launchPoints,
     );
+  }
+
+  @override
+  String toString() {
+    return 'Data:\n'
+        'Delivery Tray: $deliveryTrayPizzas Pizzas, $deliveryTrayPoints Points\n'
+        'Oven Column: $ovenColumnPizzas Pizzas, $ovenColumnPoints Points \n'
+        'Delivery Hatch: $deliveryHatchPizzas Pizzas, $deliveryHatchPoints Points \n'
+        'Combo Bonus: $comboBonuses Bonuses, $comboBonusPoints Points\n'
+        'Oven Override: $ovenOverrides Overrides, $ovenOverridePoints Points\n'
+        'Launch: $launchDistance ft, $launchPoints Points';
   }
 }
 

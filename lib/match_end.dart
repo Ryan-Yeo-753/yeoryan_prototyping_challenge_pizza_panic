@@ -14,12 +14,14 @@ class MatchEndData {
   MatchEndData(this.humanBoundaryCross, this.robotBoundaryCross, this.notes);
 
   MatchEndData copyWith({
-    bool? humanBoundaryCross, bool? robotBoundaryCross, String? notes
+    bool? humanBoundaryCross,
+    bool? robotBoundaryCross,
+    String? notes,
   }) {
     return MatchEndData(
-    humanBoundaryCross ?? this.humanBoundaryCross,
-    robotBoundaryCross ?? this.robotBoundaryCross,
-    notes ?? this.notes,
+      humanBoundaryCross ?? this.humanBoundaryCross,
+      robotBoundaryCross ?? this.robotBoundaryCross,
+      notes ?? this.notes,
     );
   }
 }
@@ -27,6 +29,17 @@ class MatchEndData {
 class MatchEndDataSavings extends Notifier<MatchEndData> {
   @override
   MatchEndData build() => MatchEndData(false, false, '');
+
+  void updateHumanBoundaryCross(bool? value) =>
+      state = state.copyWith(humanBoundaryCross: value!);
+
+  void updateRobotBoundaryCross(bool? value) =>
+      state = state.copyWith(robotBoundaryCross: value!);
+
+  void updateNotes(String notes) {
+    String newNotes = notes;
+    state = state.copyWith(notes: newNotes);
+  }
 }
 
 final matchEndDataSavingsProvider =
@@ -44,11 +57,10 @@ class MatchEndPage extends ConsumerStatefulWidget {
 }
 
 class MatchEndPageState extends ConsumerState<MatchEndPage> {
-  bool _humanBoundaryCross = false;
-  bool _robotBoundaryCross = false;
 
   @override
   Widget build(BuildContext context) {
+    final matchEndPageData = ref.watch(matchEndDataSavingsProvider);
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -77,11 +89,11 @@ class MatchEndPageState extends ConsumerState<MatchEndPage> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: Checkbox(
-                              value: _humanBoundaryCross,
+                              value: matchEndPageData.humanBoundaryCross,
                               onChanged: (bool? value) {
-                                setState(() {
-                                  _humanBoundaryCross = value!;
-                                });
+                                ref
+                                    .read(matchEndDataSavingsProvider.notifier)
+                                    .updateHumanBoundaryCross(value);
                               },
                             ),
                           ),
@@ -105,11 +117,11 @@ class MatchEndPageState extends ConsumerState<MatchEndPage> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: Checkbox(
-                              value: _robotBoundaryCross,
+                              value: matchEndPageData.robotBoundaryCross,
                               onChanged: (bool? value) {
-                                setState(() {
-                                  _robotBoundaryCross = value!;
-                                });
+                                ref
+                                    .read(matchEndDataSavingsProvider.notifier)
+                                    .updateRobotBoundaryCross(value);
                               },
                             ),
                           ),
@@ -123,10 +135,14 @@ class MatchEndPageState extends ConsumerState<MatchEndPage> {
                 height: 500,
                 borderWidth: 4,
                 padding: 20,
-                child: TextField(
+                child: TextFormField(
+                  initialValue: ref.read(matchEndDataSavingsProvider).notes,
                   keyboardType: TextInputType.multiline,
                   minLines: 1,
                   maxLines: null,
+                  onChanged: (value) {
+                    ref.read(matchEndDataSavingsProvider.notifier).updateNotes(value);
+                  },
                 ),
               ),
               Padding(

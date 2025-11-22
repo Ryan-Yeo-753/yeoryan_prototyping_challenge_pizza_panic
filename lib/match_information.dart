@@ -40,7 +40,7 @@ class MatchInformationData {
     bool? burnedMotor,
     bool? detachedMechanism,
     int? malfunctionNumber,
-    int? malfunctionPenalty
+    int? malfunctionPenalty,
   }) {
     return MatchInformationData(
       teamName ?? this.teamName,
@@ -57,15 +57,72 @@ class MatchInformationData {
 }
 
 class MatchInformationDataSavings extends Notifier<MatchInformationData> {
+  int newMatchNumber = 0;
+
   @override
   MatchInformationData build() =>
       MatchInformationData('Papa John\'s', 1, 0, 0, 0, false, false, 0, 0);
+
+  void addMalfunction() {
+    int newMalfunctionNumber = state.malfunctionNumber;
+    int newMalfunctionPenalty = state.malfunctionPenalty;
+
+    newMalfunctionNumber++;
+    switch (newMalfunctionNumber) {
+      case > 1:
+        newMalfunctionPenalty = (((newMalfunctionNumber - 1) * 30) + 5);
+        break;
+      case < 1:
+        newMalfunctionPenalty = 0;
+        break;
+      default:
+        newMalfunctionPenalty = 5;
+        break;
+    }
+
+    state = state.copyWith(
+      malfunctionNumber: newMalfunctionNumber,
+      malfunctionPenalty: newMalfunctionPenalty,
+    );
+  }
+
+  void removeMalfunction() {
+    int newMalfunctionNumber = state.malfunctionNumber;
+    int newMalfunctionPenalty = state.malfunctionPenalty;
+
+    newMalfunctionNumber--;
+    switch (newMalfunctionNumber) {
+      case > 1:
+        newMalfunctionPenalty = (((newMalfunctionNumber - 1) * 30) + 5);
+        break;
+      case < 1:
+        newMalfunctionPenalty = 0;
+        break;
+      default:
+        newMalfunctionPenalty = 5;
+        break;
+    }
+
+    state = state.copyWith(
+      malfunctionNumber: newMalfunctionNumber,
+      malfunctionPenalty: newMalfunctionPenalty,
+    );
+  }
+
+  void updateMatchNumber(String number) {
+    int newMatchNumber = int.tryParse(number) ?? 1;
+    state = state.copyWith(matchNumber: newMatchNumber);
+  }
 }
 
 final matchInformationDataSavingsProvider =
     NotifierProvider<MatchInformationDataSavings, MatchInformationData>(
       MatchInformationDataSavings.new,
     );
+
+// enum TeamNames {
+//   papaJohns, littleCaesars, pizzaHut, farrellis, mODPizza
+// }
 
 class MatchInformationPage extends ConsumerStatefulWidget {
   const MatchInformationPage({super.key});
@@ -81,14 +138,12 @@ class MatchInformationPageState extends ConsumerState<MatchInformationPage> {
   int _totalScore = 0;
   int _summativePoints = 0;
   int _summativePenalties = 0;
-  bool _burnedMotor = false;
-  bool _detachedMechanism = false;
-  int _malfuctionNumber = 0;
-  TextEditingController _matchNumber = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final matchInformationPageData = ref.watch(matchInformationDataSavingsProvider);
+    final matchInformationPageData = ref.watch(
+      matchInformationDataSavingsProvider,
+    );
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -127,7 +182,15 @@ class MatchInformationPageState extends ConsumerState<MatchInformationPage> {
                                   child: Stack(
                                     children: [
                                       TextFormField(
-                                        controller: _matchNumber,
+                                        initialValue: matchInformationPageData
+                                            .matchNumber
+                                            .toString(),
+                                        onChanged: (value) => ref
+                                            .read(
+                                              matchInformationDataSavingsProvider
+                                                  .notifier,
+                                            )
+                                            .updateMatchNumber(value),
                                         decoration: const InputDecoration(
                                           filled: true,
                                           fillColor: Color(0xfff6ff00),
@@ -172,7 +235,7 @@ class MatchInformationPageState extends ConsumerState<MatchInformationPage> {
                                     vertical: 10,
                                   ),
                                   child: DropdownButton<String>(
-                                    value: teamNameDropdownValue,
+                                    value: matchInformationPageData.teamName,
                                     items: const [
                                       DropdownMenuItem(
                                         value: 'Papa John\'s',
@@ -198,7 +261,7 @@ class MatchInformationPageState extends ConsumerState<MatchInformationPage> {
                                     borderRadius: BorderRadius.circular(20),
                                     onChanged: (String? newTeamScouting) {
                                       setState(() {
-                                        teamNameDropdownValue =
+                                        matchInformationPageData.teamName =
                                             newTeamScouting!;
                                       });
                                     },
@@ -339,10 +402,10 @@ class MatchInformationPageState extends ConsumerState<MatchInformationPage> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: Checkbox(
-                              value: _burnedMotor,
+                              value: matchInformationPageData.burnedMotor,
                               onChanged: (bool? value) {
                                 setState(() {
-                                  _burnedMotor = value!;
+                                  matchInformationPageData.burnedMotor = value!;
                                 });
                               },
                             ),
@@ -367,10 +430,11 @@ class MatchInformationPageState extends ConsumerState<MatchInformationPage> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: Checkbox(
-                              value: _detachedMechanism,
+                              value: matchInformationPageData.detachedMechanism,
                               onChanged: (bool? value) {
                                 setState(() {
-                                  _detachedMechanism = value!;
+                                  matchInformationPageData.detachedMechanism =
+                                      value!;
                                 });
                               },
                             ),
@@ -394,9 +458,7 @@ class MatchInformationPageState extends ConsumerState<MatchInformationPage> {
                           ),
                           Align(
                             alignment: Alignment.centerRight,
-                            child: MatchInformationDataPanel(
-                              linkedVariableInput: _malfuctionNumber,
-                            ),
+                            child: MatchInformationDataPanel(),
                           ),
                         ],
                       ),
@@ -412,24 +474,21 @@ class MatchInformationPageState extends ConsumerState<MatchInformationPage> {
   }
 }
 
-class MatchInformationDataPanel extends StatefulWidget {
-  int linkedVariableInput;
-
-  MatchInformationDataPanel({super.key, required this.linkedVariableInput});
+class MatchInformationDataPanel extends ConsumerStatefulWidget {
+  MatchInformationDataPanel({super.key});
 
   @override
-  State<StatefulWidget> createState() {
-    return MatchInformationDataPanelState(linkedVariable: linkedVariableInput);
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return MatchInformationDataPanelState();
   }
 }
 
-class MatchInformationDataPanelState extends State<MatchInformationDataPanel> {
-  int linkedVariable;
-
-  MatchInformationDataPanelState({required this.linkedVariable});
-
+class MatchInformationDataPanelState
+    extends ConsumerState<MatchInformationDataPanel> {
   @override
   Widget build(BuildContext context) {
+    final _data = ref.watch(matchInformationDataSavingsProvider);
+    final _provider = ref.read(matchInformationDataSavingsProvider.notifier);
     return SizedBox(
       height: 45,
       child: Row(
@@ -437,35 +496,61 @@ class MatchInformationDataPanelState extends State<MatchInformationDataPanel> {
         children: [
           FilledButton(
             style: FilledButton.styleFrom(
+              fixedSize: Size(45, 45),
               shape: RoundedRectangleBorder(),
               backgroundColor: Color(0xfff6ff00),
-              side: BorderSide(color: Colors.black, width: 2)
+              side: BorderSide(color: Colors.black, width: 2),
             ),
             onPressed: () {
-              setState(() {
-                (linkedVariable--);
-              });
+              ref
+                  .read(matchInformationDataSavingsProvider.notifier)
+                  .removeMalfunction();
             },
-            child: Icon(
-              color: Colors.black,
-              Icons.remove
+            child: Icon(color: Colors.black, Icons.remove),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Color(0xfff6ff00),
+              border: Border.all(color: Colors.black, width: 2),
+            ),
+            height: 45,
+            child: Align(
+              alignment: Alignment.center,
+              child: Label(
+                label: '#: ${_data.malfunctionNumber}',
+                verticalSpace: 0,
+                horizontalSpace: 0,
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Color(0xfff6ff00),
+              border: Border.all(color: Colors.black, width: 2),
+            ),
+            height: 45,
+            child: Align(
+              alignment: Alignment.center,
+              child: Label(
+                label: 'Points: ${_data.malfunctionPenalty}',
+                verticalSpace: 0,
+                horizontalSpace: 0,
+              ),
             ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
+              fixedSize: Size(45, 45),
               shape: RoundedRectangleBorder(),
               backgroundColor: Color(0xfff6ff00),
-              side: BorderSide(color: Colors.black,width: 2)
+              side: BorderSide(color: Colors.black, width: 2),
             ),
             onPressed: () {
-              setState(() {
-                (linkedVariable++);
-              });
+              ref
+                  .read(matchInformationDataSavingsProvider.notifier)
+                  .addMalfunction();
             },
-            child: Icon(
-              color: Colors.black,
-              Icons.add
-            ),
+            child: Icon(color: Colors.black, Icons.add),
           ),
         ],
       ),

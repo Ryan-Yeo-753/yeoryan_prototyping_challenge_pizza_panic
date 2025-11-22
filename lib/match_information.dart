@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prototyping_challenge_pizza_panic/data_collection.dart';
 
 import 'package:prototyping_challenge_pizza_panic/main.dart';
 
@@ -58,9 +59,9 @@ class MatchInformationData {
     return 'Match Information:\n'
         'Team Name: $teamName\n'
         'Match Number: $matchNumber\n'
-        'Total Score: $totalScore\n'
-        'Summative Points: $summativePoints\n'
-        'SummativePenalties: $summativePenalties\n'
+        // 'Total Score: $totalScore\n'
+        // 'Summative Points: $summativePoints\n'
+        // 'SummativePenalties: $summativePenalties\n'
         'Motor Burned? $burnedMotor\n'
         'Detached Mechanism? $detachedMechanism\n'
         'Malfunctions: $malfunctionNumber\n'
@@ -124,6 +125,18 @@ class MatchInformationDataSavings extends Notifier<MatchInformationData> {
   void updateMatchNumber(String number) {
     int newMatchNumber = int.tryParse(number) ?? 1;
     state = state.copyWith(matchNumber: newMatchNumber);
+  }
+
+  void updateScore() {
+    int newTotalScore = state.totalScore;
+    int newSummativePoints = state.summativePoints;
+    int newSummativePenalties = state.summativePenalties;
+
+    state = state.copyWith(
+      totalScore: newTotalScore,
+      summativePoints: newSummativePoints,
+      summativePenalties: newSummativePenalties
+    );
   }
 }
 
@@ -288,109 +301,109 @@ class MatchInformationPageState extends ConsumerState<MatchInformationPage> {
                   ],
                 ),
               ),
-              DataRowContainer(
-                height: 139,
-                borderWidth: 2,
-                padding: 20,
-                child: Stack(
-                  children: [
-                    Column(
-                      children: [
-                        DataRowContainer(
-                          height: 45,
-                          borderWidth: 2,
-                          padding: 0,
-                          child: Stack(
-                            children: [
-                              SizedBox(
-                                height: 45,
-                                child: Label(
-                                  label: 'Total Score:',
-                                  horizontalSpace: 10,
-                                  verticalSpace: 0,
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: SizedBox(
-                                  height: 45,
-                                  child: Label(
-                                    label: '$_totalScore',
-                                    horizontalSpace: 10,
-                                    verticalSpace: 0,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        DataRowContainer(
-                          height: 45,
-                          borderWidth: 2,
-                          padding: 0,
-                          child: Stack(
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: SizedBox(
-                                  height: 45,
-                                  child: Label(
-                                    label: 'Summative Points:',
-                                    horizontalSpace: 10,
-                                    verticalSpace: 0,
-                                  ),
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: SizedBox(
-                                  height: 45,
-                                  child: Label(
-                                    label: '$_summativePoints',
-                                    horizontalSpace: 10,
-                                    verticalSpace: 0,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        DataRowContainer(
-                          height: 45,
-                          borderWidth: 2,
-                          padding: 0,
-                          child: Stack(
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: SizedBox(
-                                  height: 45,
-                                  child: Label(
-                                    label: 'Summative Penalties:',
-                                    horizontalSpace: 10,
-                                    verticalSpace: 0,
-                                  ),
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: SizedBox(
-                                  height: 45,
-                                  child: Label(
-                                    label: '$_summativePenalties',
-                                    horizontalSpace: 10,
-                                    verticalSpace: 0,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              // DataRowContainer(
+              //   height: 139,
+              //   borderWidth: 2,
+              //   padding: 20,
+              //   child: Stack(
+              //     children: [
+              //       Column(
+              //         children: [
+              //           DataRowContainer(
+              //             height: 45,
+              //             borderWidth: 2,
+              //             padding: 0,
+              //             child: Stack(
+              //               children: [
+              //                 SizedBox(
+              //                   height: 45,
+              //                   child: Label(
+              //                     label: 'Total Score:',
+              //                     horizontalSpace: 10,
+              //                     verticalSpace: 0,
+              //                   ),
+              //                 ),
+              //                 Align(
+              //                   alignment: Alignment.centerRight,
+              //                   child: SizedBox(
+              //                     height: 45,
+              //                     child: Label(
+              //                       label: '$_totalScore',
+              //                       horizontalSpace: 10,
+              //                       verticalSpace: 0,
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //           DataRowContainer(
+              //             height: 45,
+              //             borderWidth: 2,
+              //             padding: 0,
+              //             child: Stack(
+              //               children: [
+              //                 Align(
+              //                   alignment: Alignment.centerLeft,
+              //                   child: SizedBox(
+              //                     height: 45,
+              //                     child: Label(
+              //                       label: 'Summative Points:',
+              //                       horizontalSpace: 10,
+              //                       verticalSpace: 0,
+              //                     ),
+              //                   ),
+              //                 ),
+              //                 Align(
+              //                   alignment: Alignment.centerRight,
+              //                   child: SizedBox(
+              //                     height: 45,
+              //                     child: Label(
+              //                       label: '$_summativePoints',
+              //                       horizontalSpace: 10,
+              //                       verticalSpace: 0,
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //           DataRowContainer(
+              //             height: 45,
+              //             borderWidth: 2,
+              //             padding: 0,
+              //             child: Stack(
+              //               children: [
+              //                 Align(
+              //                   alignment: Alignment.centerLeft,
+              //                   child: SizedBox(
+              //                     height: 45,
+              //                     child: Label(
+              //                       label: 'Summative Penalties:',
+              //                       horizontalSpace: 10,
+              //                       verticalSpace: 0,
+              //                     ),
+              //                   ),
+              //                 ),
+              //                 Align(
+              //                   alignment: Alignment.centerRight,
+              //                   child: SizedBox(
+              //                     height: 45,
+              //                     child: Label(
+              //                       label: '$_summativePenalties',
+              //                       horizontalSpace: 10,
+              //                       verticalSpace: 0,
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ],
+              //   ),
+              // ),
               DataRowContainer(
                 height: 139,
                 borderWidth: 2,

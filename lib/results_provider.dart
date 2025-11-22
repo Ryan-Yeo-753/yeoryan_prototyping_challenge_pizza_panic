@@ -53,7 +53,7 @@ class DataSavings extends Notifier<ScoutingData> {
       additionalData: state.additionalData
     );
 
-    final client = await Nyxx.connectGateway('MTQ0MTkwMDU2MTA3NDIyNTIyMw.GbAx86.i1tnZO54FFqJs91JMkKIexsrP_AqufNQfdrLqI',
+    final client = await Nyxx.connectGateway('', // DISCORD TOKEN GOES HERE, BUT IT NEEDS TO BE PRIVATE
       GatewayIntents.allUnprivileged,
     );
 

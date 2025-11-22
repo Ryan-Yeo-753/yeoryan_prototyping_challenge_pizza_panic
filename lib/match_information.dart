@@ -2,6 +2,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:prototyping_challenge_pizza_panic/main.dart';
+import 'package:prototyping_challenge_pizza_panic/data_collection.dart';
 import 'package:prototyping_challenge_pizza_panic/results_provider.dart';
 
 class MatchInformationData {
@@ -28,6 +30,30 @@ class MatchInformationData {
     this.malfunctionNumber,
     this.malfunctionPenalty,
   );
+
+  MatchInformationData copyWith({
+    String? teamName,
+    int? matchNumber,
+    int? totalScore,
+    int? summativePoints,
+    int? summativePenalties,
+    bool? burnedMotor,
+    bool? detachedMechanism,
+    int? malfunctionNumber,
+    int? malfunctionPenalty
+  }) {
+    return MatchInformationData(
+      teamName ?? this.teamName,
+      matchNumber ?? this.matchNumber,
+      totalScore ?? this.totalScore,
+      summativePoints ?? this.summativePoints,
+      summativePenalties ?? this.summativePenalties,
+      burnedMotor ?? this.burnedMotor,
+      detachedMechanism ?? this.detachedMechanism,
+      malfunctionNumber ?? this.malfunctionNumber,
+      malfunctionPenalty ?? this.malfunctionPenalty,
+    );
+  }
 }
 
 class MatchInformationDataSavings extends Notifier<MatchInformationData> {
@@ -51,7 +77,6 @@ class MatchInformationPage extends ConsumerStatefulWidget {
 }
 
 class MatchInformationPageState extends ConsumerState<MatchInformationPage> {
-  late final _pageData = ref.read(matchInformationDataSavingsProvider);
   String teamNameDropdownValue = 'Papa John\'s';
   int _totalScore = 0;
   int _summativePoints = 0;
@@ -63,6 +88,7 @@ class MatchInformationPageState extends ConsumerState<MatchInformationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final matchInformationPageData = ref.watch(matchInformationDataSavingsProvider);
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -366,7 +392,6 @@ class MatchInformationPageState extends ConsumerState<MatchInformationPage> {
                               horizontalSpace: 10,
                             ),
                           ),
-                          Spacer(),
                           Align(
                             alignment: Alignment.centerRight,
                             child: MatchInformationDataPanel(
@@ -382,69 +407,6 @@ class MatchInformationPageState extends ConsumerState<MatchInformationPage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class DataRowContainer extends StatelessWidget {
-  final double height;
-  final double borderWidth;
-  final double padding;
-  final Widget child;
-
-  const DataRowContainer({
-    super.key,
-    required this.height,
-    required this.borderWidth,
-    required this.padding,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.all(padding),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xffffc547),
-                border: Border.all(color: Colors.black, width: borderWidth),
-              ),
-              height: height,
-              child: child,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class Label extends StatelessWidget {
-  String label;
-  double verticalSpace;
-  double horizontalSpace;
-
-  Label({
-    super.key,
-    required this.label,
-    required this.verticalSpace,
-    required this.horizontalSpace,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: verticalSpace,
-        horizontal: horizontalSpace,
-      ),
-      child: Text(
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-        label,
       ),
     );
   }

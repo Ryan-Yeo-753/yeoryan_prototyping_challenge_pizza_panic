@@ -74,3 +74,66 @@ class MainPageState extends ConsumerState<MainPage> {
     );
   }
 }
+
+class DataRowContainer extends StatelessWidget {
+  final double height;
+  final double borderWidth;
+  final double padding;
+  final Widget child;
+
+  const DataRowContainer({
+    super.key,
+    required this.height,
+    required this.borderWidth,
+    required this.padding,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.all(padding),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Color(0xffffc547),
+                border: Border.all(color: Colors.black, width: borderWidth),
+              ),
+              height: height,
+              child: child,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class Label extends StatelessWidget {
+  String label;
+  double verticalSpace;
+  double horizontalSpace;
+
+  Label({
+    super.key,
+    required this.label,
+    required this.verticalSpace,
+    required this.horizontalSpace,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: verticalSpace,
+        horizontal: horizontalSpace,
+      ),
+      child: Text(
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+        label,
+      ),
+    );
+  }
+}
